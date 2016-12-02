@@ -7,6 +7,8 @@
 #include "ImageRetrive01Dlg.h"
 #include "afxdialogex.h"
 #include "FeedbackDlg.h"
+#include "FeatureEx.h"
+#include <algorithm>
 
 #include <string>
 
@@ -259,6 +261,8 @@ void CImageRetrive01Dlg::OnBnClickedButtonChooseImage()
 
 		//将CString 转换为string
 		std::string pathName((CStringA(filePath)));
+		//保存用户选择的图片路径
+		this->m_userChooseImagePath = pathName;
 
 		//读取图片
 		//cv::Mat orgImg = cv::imread(pathName);
@@ -297,22 +301,78 @@ void CImageRetrive01Dlg::OnBnClickedButtonProcessretrive()
 	//检索完毕
 }
 
-
+bool comp(const FeatureEx* f1, const FeatureEx* f2){
+	/*if (f1->score < f2->score)
+	{
+		return true;
+	}
+	return false;*/
+	return f1->score >= f2->score;
+}
 
 //---------------qjg---11/25日最新版出现问题，导致又回到之前备份的地方
 //load image from folder that store images,but in this fuction ,it is certain;
 void CImageRetrive01Dlg::OnLoadImage()
 {
+	Feature* query = new Feature();
+	if (m_userChooseImagePath.empty() )
+	{
+		MessageBox(_T("请选择图片！！！"),_T("提醒"),MB_OK|MB_ICONWARNING);
+		return ;
+	}
+	IplImage* img = cvLoadImage(m_userChooseImagePath.c_str(),1);
+	query->img = img;
+	memset(query->col_hist,0,sizeof(query->col_hist));
+	memset(query->col_moment,0,sizeof(query->col_moment));
+	query = query->get_colMoment(query);
+	query = query->get_colHis( query);
+	query = query->get_directionality(query);
+	query = query->get_contrast(query);
+
+
+	std::vector<FeatureEx*> vc;
 	char temp[100];
 	memset(temp,0,sizeof(temp));
 	for (int i = 0;i< 55;++i)
 	{
 		sprintf(temp,"F:\\opencvTask\\imgs\\imgs\\%d.jpg",i+1);
 		std::string str(temp);
-		m_retrievalFilePath.push_back(str);
+		//m_retrievalFilePath.push_back(str);
+		vc.push_back(new FeatureEx(query,str));
 	}
+
+	for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	{
+		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath);
+	}
+
+	
+	std::sort(vc.begin(),vc.end(),comp);
+
+	for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	{
+		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath.c_str());
+	}
+
+//	 int t =0;
+	for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
+		m_retrievalFilePath.push_back( (*it)->filePath );
+	/*	t++;
+		if(10 < t){
+			TRACE("--------new World------\n");
+			TRACE("-----%s---",(*it)->filePath.c_str());
+		}*/
+		delete((*it));
+	}
+
 	OnBnClickedButtonFirstpage();
 	this->updatePageMessage();
+	
+	//for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
+	//	//m_retrievalFilePath.push_back( (*it)->filePath );
+	//	i++;
+	//	delete((*it));
+	//}
 }
 
 void CImageRetrive01Dlg::OnBnClickedButtonFirstpage()

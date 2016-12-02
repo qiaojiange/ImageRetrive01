@@ -51,7 +51,7 @@ public:
 	float f_con;//对比度
 	float f_crs;//粗糙度
 	float f_dir;//方向度
-	float score;
+	//float score;
 	static std::vector<float> get_colHis(const char* filePath);
 };
 
