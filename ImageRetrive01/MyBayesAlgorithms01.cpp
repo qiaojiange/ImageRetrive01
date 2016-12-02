@@ -67,6 +67,7 @@ void MyBayesAlgorithms01::train(void)
 		}
 		labels.push_back(-1);
 	}
+
 	printf("--- trainingData end -------\n");
 	CvMat trainingDataMat;
 
@@ -87,6 +88,7 @@ void MyBayesAlgorithms01::train(void)
 	}else{
 		//可以进行增量使用
 		this->pModel->train(&trainingDataMat,&labelsCvMat,NULL,NULL,true);
+		//this->pModel->train(&trainingDataMat,&labelsCvMat,NULL,NULL,false);
 	}
 
 	//model.train(&this->trainingDataMat,&this->labelsCvMat,NULL,NULL,false);

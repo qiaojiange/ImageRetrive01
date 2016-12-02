@@ -9,8 +9,11 @@
 #include "FeedbackDlg.h"
 #include "FeatureEx.h"
 #include <algorithm>
-
+#include <stdlib.h>
+#include <time.h>
 #include <string>
+//预测图片的张数
+#define PRIDCTE_IMAGE_COUNT 16
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -43,7 +46,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 //display parameter
 extern void print(std::string str){
 	CString str1(str.c_str());
-	MessageBox(NULL,str1,_T("print"),MB_OK);
+	MessageBox(NULL,str1,_T("提醒"),MB_OK);
 }
 extern void printError(const char* str){
 	CString str1(str);
@@ -283,17 +286,28 @@ void CImageRetrive01Dlg::OnBnClickedButtonProcessretrive()
 	//OnLoadImage();
 	GetDlgItem(IDC_BUTTON_ProcessRetrive)->EnableWindow(FALSE);
 	//pAlgo->train();
-	std::vector<std::string> positiveResponseFilePath;
+//	std::vector<std::string> positiveResponseFilePath;
+	std::set<std::string> positiveResponseSet;
 	for (int i = 0;i<this->m_retrievalFilePath.size();i++)
 	{
 		float response = pAlgo->predict(m_retrievalFilePath[i]);
 		if(1 == response){//将正反馈的图片保存起来
-			positiveResponseFilePath.push_back(m_retrievalFilePath[i]);
+			//positiveResponseFilePath.push_back(m_retrievalFilePath[i]);
+			positiveResponseSet.insert(m_retrievalFilePath[i]);
+		}
+	}
+
+	//产生随机数，
+	srand (time(NULL));
+	while(PRIDCTE_IMAGE_COUNT > positiveResponseSet.size()){
+		int index = rand()%m_retrievalFilePath.size();
+		if(positiveResponseSet.find(m_retrievalFilePath[index]) == positiveResponseSet.end() ){
+			positiveResponseSet.insert(m_retrievalFilePath[index]);
 		}
 	}
 
 	m_retrievalFilePath.clear();
-	m_retrievalFilePath.assign(positiveResponseFilePath.begin(),positiveResponseFilePath.end());
+	m_retrievalFilePath.assign(positiveResponseSet.begin(),positiveResponseSet.end());
 	//加载图片
 	OnBnClickedButtonFirstpage();
 	GetDlgItem(IDC_BUTTON_Train)->EnableWindow(TRUE);
@@ -320,6 +334,8 @@ void CImageRetrive01Dlg::OnLoadImage()
 		MessageBox(_T("请选择图片！！！"),_T("提醒"),MB_OK|MB_ICONWARNING);
 		return ;
 	}
+
+	MessageBox(_T("初始化系统时间较长，请耐心等待！！！"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
 	IplImage* img = cvLoadImage(m_userChooseImagePath.c_str(),1);
 	query->img = img;
 	memset(query->col_hist,0,sizeof(query->col_hist));
@@ -341,18 +357,18 @@ void CImageRetrive01Dlg::OnLoadImage()
 		vc.push_back(new FeatureEx(query,str));
 	}
 
-	for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	/*for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
 	{
 		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath);
-	}
+	}*/
 
 	
 	std::sort(vc.begin(),vc.end(),comp);
 
-	for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	/*for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
 	{
 		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath.c_str());
-	}
+	}*/
 
 //	 int t =0;
 	for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
@@ -543,8 +559,7 @@ void CImageRetrive01Dlg::OnDestroy()
 void CImageRetrive01Dlg::OnBnClickedButtonInitsystem()
 {
 	// TODO: 在此添加控件通知处理程序代码
-//	OnLoadImage();
-
+	OnLoadImage();
 }
 
 void CImageRetrive01Dlg::feedback(int i)
