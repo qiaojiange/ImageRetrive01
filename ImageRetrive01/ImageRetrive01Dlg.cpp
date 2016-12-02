@@ -483,7 +483,7 @@ void CImageRetrive01Dlg::OnDestroy()
 void CImageRetrive01Dlg::OnBnClickedButtonInitsystem()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	OnLoadImage();
+//	OnLoadImage();
 
 }
 
