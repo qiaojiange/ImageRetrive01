@@ -13,7 +13,7 @@
 #include <time.h>
 #include <string>
 //т╓╡Бм╪ф╛╣дуейЩ
-#define PRIDCTE_IMAGE_COUNT 16
+#define PRIDCTE_IMAGE_COUNT 10
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

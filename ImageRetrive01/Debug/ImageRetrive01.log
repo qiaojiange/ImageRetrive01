@@ -1,17 +1,10 @@
-﻿生成启动时间为 2016/12/2 19:07:20。
+﻿生成启动时间为 2016/12/2 20:29:15。
      1>项目“F:\C_C++\imageProcess\ImageRetrive01\ImageRetrive01\ImageRetrive01.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\ImageRetrive01.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
          所有输出均为最新。
-         d:\soft_install\vs2010\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\ImageRetrive01.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ImageRetrive01Dlg.cpp MyBayesAlgorithms01.cpp
-         MyBayesAlgorithms01.cpp
-     1>d:\soft_install\opencv\opencv\build\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 d:\soft_install\vs2010\vc\include\stdio.h(234) : 参见“fopen”的声明
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\mybayesalgorithms01.cpp(50): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\mybayesalgorithms01.cpp(53): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\mybayesalgorithms01.cpp(61): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\mybayesalgorithms01.cpp(64): warning C4018: “<”: 有符号/无符号不匹配
+         d:\soft_install\vs2010\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\ImageRetrive01.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ImageRetrive01Dlg.cpp
          ImageRetrive01Dlg.cpp
      1>d:\soft_install\opencv\opencv\build\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  d:\soft_install\vs2010\vc\include\stdio.h(234) : 参见“fopen”的声明
@@ -27,7 +20,6 @@
      1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(477): warning C4018: “<”: 有符号/无符号不匹配
      1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(680): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  d:\soft_install\vs2010\vc\include\stdio.h(371) : 参见“sprintf”的声明
-         正在生成代码...
        ResourceCompile:
          所有输出均为最新。
        ManifestResourceCompile:
@@ -57,4 +49,4 @@
 
 生成成功。
 
-已用时间 00:00:04.66
+已用时间 00:00:04.12
