@@ -42,15 +42,21 @@ CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 {
 
 }
+extern void MyMessageBox( 
+	 LPCWSTR lpText,
+	 LPCWSTR lpCaption,
+	 UINT uType){
+	MessageBoxEx(NULL,lpText,lpCaption,uType,MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
 
+}
 //display parameter
 extern void print(std::string str){
 	CString str1(str.c_str());
-	MessageBox(NULL,str1,_T("提醒"),MB_OK);
+	MyMessageBox(str1,_T("Alert"),MB_OK);
 }
 extern void printError(const char* str){
 	CString str1(str);
-	MessageBox(NULL,str1,_T("Error"),MB_ICONERROR|MB_OK);
+	MyMessageBox(str1,_T("Error"),MB_ICONERROR|MB_OK);
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
@@ -311,7 +317,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonProcessretrive()
 	//加载图片
 	OnBnClickedButtonFirstpage();
 	GetDlgItem(IDC_BUTTON_Train)->EnableWindow(TRUE);
-	MessageBox(_T("检索完毕"),_T("提醒"),MB_OK|MB_ICONINFORMATION);
+	MyMessageBox(_T("Retrieval over!!!"),_T("Alert"),MB_OK|MB_ICONINFORMATION);
 	//检索完毕
 }
 
@@ -331,11 +337,11 @@ void CImageRetrive01Dlg::OnLoadImage()
 	Feature* query = new Feature();
 	if (m_userChooseImagePath.empty() )
 	{
-		MessageBox(_T("请选择图片！！！"),_T("提醒"),MB_OK|MB_ICONWARNING);
+		MyMessageBox(_T("please select the picture！！！"),_T("Alert"),MB_OK|MB_ICONWARNING);
 		return ;
 	}
 
-	MessageBox(_T("初始化系统时间较长，请耐心等待！！！"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
+	MyMessageBox(_T("it will take long time to initial the system， please be patient！！！"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
 	IplImage* img = cvLoadImage(m_userChooseImagePath.c_str(),1);
 	query->img = img;
 	memset(query->col_hist,0,sizeof(query->col_hist));
@@ -373,17 +379,12 @@ void CImageRetrive01Dlg::OnLoadImage()
 //	 int t =0;
 	for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
 		m_retrievalFilePath.push_back( (*it)->filePath );
-	/*	t++;
-		if(10 < t){
-			TRACE("--------new World------\n");
-			TRACE("-----%s---",(*it)->filePath.c_str());
-		}*/
 		delete((*it));
 	}
 
 	OnBnClickedButtonFirstpage();
 	this->updatePageMessage();
-	
+	UpdateData(FALSE);
 	//for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
 	//	//m_retrievalFilePath.push_back( (*it)->filePath );
 	//	i++;
@@ -424,7 +425,8 @@ void CImageRetrive01Dlg::OnBnClickedButtonPageup()
 			}
 		}
 	}else{
-		print("亲，已经是首页了！！！");
+		//print("亲，已经是首页了！！！");
+		print("This is trailer page!!!");
 	}
 	updatePageMessage();
 }
@@ -435,7 +437,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_retrievalCurrentIndex +1 == m_retrievalFilePath.size()  )
 	{
-		print("已经是最后一页了！");
+		print("This is trailer page!!!");
 	}else{
 		//最后一页
 		if (m_retrievalCurrentIndex+PerPageCount >= m_retrievalFilePath.size() && (m_retrievalCurrentIndex+PerPageCount <= m_retrievalFilePath.size()+PerPageCount))
@@ -448,7 +450,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 			int j = i%8;
 			for ( ;j<8;j++)
 			{
-				IplImage * img = cvLoadImage("f:\\2.jpg",1);
+				IplImage * img = cvLoadImage("f:/2.jpg",1);
 				DrawPictureToHDC(img,IDC_STATIC_ImgFeedback1+j);
 			}
 		}else if( m_retrievalCurrentIndex+PerPageCount < m_retrievalFilePath.size() )//向下翻页
@@ -459,7 +461,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 				showPerImage(i);
 			}
 		}else{
-			print("已经是最后一页了！");
+			print("This is trailer page！");
 		}	
 	}
 	updatePageMessage();
@@ -470,7 +472,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonEndpage()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_retrievalCurrentIndex+1 >= m_retrievalFilePath.size()){
-		print("当前已经是最后一页了！！！");
+		print("This is trailer page！！！");
 	}else{
 		int endPageIndex =PerPageCount*( m_retrievalFilePath.size()/PerPageCount);
 		int i = 0;
@@ -566,7 +568,7 @@ void CImageRetrive01Dlg::feedback(int i)
 {
 	if (m_retrievalFilePath.size() == 0)
 	{
-		MessageBox(_T("请初始化系统！"),_T("警告"),MB_OK|MB_ICONWARNING);
+		MyMessageBox(_T("Please initial system！"),_T("Alert"),MB_OK|MB_ICONWARNING);
 		return ;
 	}
 
@@ -650,9 +652,9 @@ void CImageRetrive01Dlg::OnBnClickedButtonTrain()
 	// TODO: 在此添加控件通知处理程序代码
 	GetDlgItem(IDC_BUTTON_InitSystem)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Train)->EnableWindow(FALSE);
-	MessageBox(_T("由于机器性能不同，训练时间可能较长，请耐心等待！！！"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
+	MyMessageBox(_T("It will take a long time to train ,please wait with patient！！！"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
 	pAlgo->train();
-	MessageBox(_T("训练完毕"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
+	MyMessageBox(_T("Train over"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
 	GetDlgItem(IDC_BUTTON_ProcessRetrive)->EnableWindow(TRUE);
 }
 
