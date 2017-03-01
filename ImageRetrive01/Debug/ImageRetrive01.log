@@ -1,24 +1,10 @@
-﻿生成启动时间为 2016/11/30 16:00:51。
+﻿生成启动时间为 2016/12/5 22:11:31。
      1>项目“F:\C_C++\imageProcess\ImageRetrive01\ImageRetrive01\ImageRetrive01.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\ImageRetrive01.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
          所有输出均为最新。
-         d:\soft_install\vs2010\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\ImageRetrive01.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ImageRetrive01Dlg.cpp
-         ImageRetrive01Dlg.cpp
-     1>d:\soft_install\opencv\opencv\build\include\opencv2\flann\logger.h(66): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 d:\soft_install\vs2010\vc\include\stdio.h(234) : 参见“fopen”的声明
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(283): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(310): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 d:\soft_install\vs2010\vc\include\stdio.h(371) : 参见“sprintf”的声明
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(365): warning C4018: “>=”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(365): warning C4018: “<=”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(368): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(378): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(396): warning C4018: “>=”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(401): warning C4018: “<”: 有符号/无符号不匹配
-     1>f:\c_c++\imageprocess\imageretrive01\imageretrive01\imageretrive01dlg.cpp(605): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 d:\soft_install\vs2010\vc\include\stdio.h(371) : 参见“sprintf”的声明
+         所有输出均为最新。
        ResourceCompile:
          C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0804" /IDebug\ /nologo /fo"Debug\ImageRetrive01.res" ImageRetrive01.rc 
        ManifestResourceCompile:
@@ -29,6 +15,7 @@
          Debug\BayesAlgorithms.obj
          Debug\CvvImage.obj
          Debug\Feature.obj
+         Debug\FeatureEx.obj
          Debug\FeedbackDlg.obj
          Debug\ImageRetrive01.obj
          Debug\ImageRetrive01Dlg.obj
@@ -47,4 +34,4 @@
 
 生成成功。
 
-已用时间 00:00:02.00
+已用时间 00:00:00.65

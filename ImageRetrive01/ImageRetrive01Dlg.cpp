@@ -7,8 +7,13 @@
 #include "ImageRetrive01Dlg.h"
 #include "afxdialogex.h"
 #include "FeedbackDlg.h"
-
+#include "FeatureEx.h"
+#include <algorithm>
+#include <stdlib.h>
+#include <time.h>
 #include <string>
+//预测图片的张数
+#define PRIDCTE_IMAGE_COUNT 10
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,15 +42,21 @@ CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 {
 
 }
+extern void MyMessageBox( 
+	 LPCWSTR lpText,
+	 LPCWSTR lpCaption,
+	 UINT uType){
+	MessageBoxEx(NULL,lpText,lpCaption,uType,MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US));
 
+}
 //display parameter
 extern void print(std::string str){
 	CString str1(str.c_str());
-	MessageBox(NULL,str1,_T("print"),MB_OK);
+	MyMessageBox(str1,_T("Alert"),MB_OK);
 }
 extern void printError(const char* str){
 	CString str1(str);
-	MessageBox(NULL,str1,_T("Error"),MB_ICONERROR|MB_OK);
+	MyMessageBox(str1,_T("Error"),MB_ICONERROR|MB_OK);
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
@@ -259,6 +270,8 @@ void CImageRetrive01Dlg::OnBnClickedButtonChooseImage()
 
 		//将CString 转换为string
 		std::string pathName((CStringA(filePath)));
+		//保存用户选择的图片路径
+		this->m_userChooseImagePath = pathName;
 
 		//读取图片
 		//cv::Mat orgImg = cv::imread(pathName);
@@ -279,40 +292,104 @@ void CImageRetrive01Dlg::OnBnClickedButtonProcessretrive()
 	//OnLoadImage();
 	GetDlgItem(IDC_BUTTON_ProcessRetrive)->EnableWindow(FALSE);
 	//pAlgo->train();
-	std::vector<std::string> positiveResponseFilePath;
+//	std::vector<std::string> positiveResponseFilePath;
+	std::set<std::string> positiveResponseSet;
 	for (int i = 0;i<this->m_retrievalFilePath.size();i++)
 	{
 		float response = pAlgo->predict(m_retrievalFilePath[i]);
 		if(1 == response){//将正反馈的图片保存起来
-			positiveResponseFilePath.push_back(m_retrievalFilePath[i]);
+			//positiveResponseFilePath.push_back(m_retrievalFilePath[i]);
+			positiveResponseSet.insert(m_retrievalFilePath[i]);
+		}
+	}
+
+	//产生随机数，
+	srand (time(NULL));
+	while(PRIDCTE_IMAGE_COUNT > positiveResponseSet.size()){
+		int index = rand()%m_retrievalFilePath.size();
+		if(positiveResponseSet.find(m_retrievalFilePath[index]) == positiveResponseSet.end() ){
+			positiveResponseSet.insert(m_retrievalFilePath[index]);
 		}
 	}
 
 	m_retrievalFilePath.clear();
-	m_retrievalFilePath.assign(positiveResponseFilePath.begin(),positiveResponseFilePath.end());
+	m_retrievalFilePath.assign(positiveResponseSet.begin(),positiveResponseSet.end());
 	//加载图片
 	OnBnClickedButtonFirstpage();
 	GetDlgItem(IDC_BUTTON_Train)->EnableWindow(TRUE);
-	MessageBox(_T("检索完毕"),_T("提醒"),MB_OK|MB_ICONINFORMATION);
+	MyMessageBox(_T("Retrieval over!!!"),_T("Alert"),MB_OK|MB_ICONINFORMATION);
 	//检索完毕
 }
 
-
+bool comp(const FeatureEx* f1, const FeatureEx* f2){
+	/*if (f1->score < f2->score)
+	{
+		return true;
+	}
+	return false;*/
+	return f1->score >= f2->score;
+}
 
 //---------------qjg---11/25日最新版出现问题，导致又回到之前备份的地方
 //load image from folder that store images,but in this fuction ,it is certain;
 void CImageRetrive01Dlg::OnLoadImage()
 {
+	Feature* query = new Feature();
+	if (m_userChooseImagePath.empty() )
+	{
+		MyMessageBox(_T("please select the picture！！！"),_T("Alert"),MB_OK|MB_ICONWARNING);
+		return ;
+	}
+
+	MyMessageBox(_T("it will take long time to initial the system， please be patient！！！"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
+	IplImage* img = cvLoadImage(m_userChooseImagePath.c_str(),1);
+	query->img = img;
+	memset(query->col_hist,0,sizeof(query->col_hist));
+	memset(query->col_moment,0,sizeof(query->col_moment));
+	query = query->get_colMoment(query);
+	query = query->get_colHis( query);
+	query = query->get_directionality(query);
+	query = query->get_contrast(query);
+
+
+	std::vector<FeatureEx*> vc;
 	char temp[100];
 	memset(temp,0,sizeof(temp));
 	for (int i = 0;i< 55;++i)
 	{
 		sprintf(temp,"F:\\opencvTask\\imgs\\imgs\\%d.jpg",i+1);
 		std::string str(temp);
-		m_retrievalFilePath.push_back(str);
+		//m_retrievalFilePath.push_back(str);
+		vc.push_back(new FeatureEx(query,str));
 	}
+
+	/*for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	{
+		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath);
+	}*/
+
+	
+	std::sort(vc.begin(),vc.end(),comp);
+
+	/*for (std::vector<FeatureEx*>::iterator it = vc.begin() ;it!=vc.end();it++)
+	{
+		TRACE("%f   -------    %s\n",(*it)->score,(*it)->filePath.c_str());
+	}*/
+
+//	 int t =0;
+	for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
+		m_retrievalFilePath.push_back( (*it)->filePath );
+		delete((*it));
+	}
+
 	OnBnClickedButtonFirstpage();
 	this->updatePageMessage();
+	UpdateData(FALSE);
+	//for(std::vector<FeatureEx*>::iterator it = vc.begin();it!=vc.end();it++){
+	//	//m_retrievalFilePath.push_back( (*it)->filePath );
+	//	i++;
+	//	delete((*it));
+	//}
 }
 
 void CImageRetrive01Dlg::OnBnClickedButtonFirstpage()
@@ -348,7 +425,8 @@ void CImageRetrive01Dlg::OnBnClickedButtonPageup()
 			}
 		}
 	}else{
-		print("亲，已经是首页了！！！");
+		//print("亲，已经是首页了！！！");
+		print("This is trailer page!!!");
 	}
 	updatePageMessage();
 }
@@ -359,7 +437,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_retrievalCurrentIndex +1 == m_retrievalFilePath.size()  )
 	{
-		print("已经是最后一页了！");
+		print("This is trailer page!!!");
 	}else{
 		//最后一页
 		if (m_retrievalCurrentIndex+PerPageCount >= m_retrievalFilePath.size() && (m_retrievalCurrentIndex+PerPageCount <= m_retrievalFilePath.size()+PerPageCount))
@@ -372,7 +450,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 			int j = i%8;
 			for ( ;j<8;j++)
 			{
-				IplImage * img = cvLoadImage("f:\\2.jpg",1);
+				IplImage * img = cvLoadImage("f:/2.jpg",1);
 				DrawPictureToHDC(img,IDC_STATIC_ImgFeedback1+j);
 			}
 		}else if( m_retrievalCurrentIndex+PerPageCount < m_retrievalFilePath.size() )//向下翻页
@@ -383,7 +461,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonPagedown()
 				showPerImage(i);
 			}
 		}else{
-			print("已经是最后一页了！");
+			print("This is trailer page！");
 		}	
 	}
 	updatePageMessage();
@@ -394,7 +472,7 @@ void CImageRetrive01Dlg::OnBnClickedButtonEndpage()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	if(m_retrievalCurrentIndex+1 >= m_retrievalFilePath.size()){
-		print("当前已经是最后一页了！！！");
+		print("This is trailer page！！！");
 	}else{
 		int endPageIndex =PerPageCount*( m_retrievalFilePath.size()/PerPageCount);
 		int i = 0;
@@ -484,14 +562,13 @@ void CImageRetrive01Dlg::OnBnClickedButtonInitsystem()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	OnLoadImage();
-
 }
 
 void CImageRetrive01Dlg::feedback(int i)
 {
 	if (m_retrievalFilePath.size() == 0)
 	{
-		MessageBox(_T("请初始化系统！"),_T("警告"),MB_OK|MB_ICONWARNING);
+		MyMessageBox(_T("Please initial system！"),_T("Alert"),MB_OK|MB_ICONWARNING);
 		return ;
 	}
 
@@ -575,9 +652,9 @@ void CImageRetrive01Dlg::OnBnClickedButtonTrain()
 	// TODO: 在此添加控件通知处理程序代码
 	GetDlgItem(IDC_BUTTON_InitSystem)->EnableWindow(FALSE);
 	GetDlgItem(IDC_BUTTON_Train)->EnableWindow(FALSE);
-	MessageBox(_T("由于机器性能不同，训练时间可能较长，请耐心等待！！！"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
+	MyMessageBox(_T("It will take a long time to train ,please wait with patient！！！"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
 	pAlgo->train();
-	MessageBox(_T("训练完毕"),_T("提醒"),MB_OK | MB_ICONINFORMATION);
+	MyMessageBox(_T("Train over"),_T("Alert"),MB_OK | MB_ICONINFORMATION);
 	GetDlgItem(IDC_BUTTON_ProcessRetrive)->EnableWindow(TRUE);
 }
 
